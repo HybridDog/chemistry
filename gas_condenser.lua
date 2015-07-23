@@ -115,7 +115,7 @@ minetest.register_abm(
 		 local machine_name         = "Gas Condenser"
 		 local machine_node         = "chemistry:gas_condenser"
 		 local machine_state_demand = { 100, 500 }
-			 
+
 		 -- Setup meta data if it does not exist. state is used as an indicator of this
 		 if state == 0 then
 		    meta:set_int("state", 1)
@@ -123,10 +123,10 @@ minetest.register_abm(
 		    meta:set_int("MV_EU_input", 0)
 		    return
 		 end
-			 
+
 		 -- Power off automatically if no longer connected to a switching station
 		 technic.switching_station_timeout_count(pos, "MV")
-			 
+
 		 -- State machine
 		 if eu_input == 0 then
 		    -- unpowered - go idle
@@ -135,7 +135,7 @@ minetest.register_abm(
 		    next_state = 1
 		 elseif eu_input == machine_state_demand[state] then
 		    -- Powered - do the state specific actions
-			    
+
 		    local inv    = meta:get_inventory()
 		    local empty  = inv:is_empty("src")
 
@@ -177,7 +177,7 @@ minetest.debug("dewar fill")
 					next_state = 1
 			dst_item["wear"]=tostring(0)
 			  inv:set_stack("dst", 1, dst_item)
-				end 
+				end
 			   elseif dst_item["name"] == "chemistry:dewar_vessel" then
 				minetest.debug("dewar empty")
 				-- take stuff from "src" list
@@ -193,7 +193,7 @@ minetest.debug("dewar fill")
 				dst_item=dststack:to_table()
 				dst_item["wear"]=tostring(math.floor(65355-(65355/100)))
 				inv:set_stack("dst", 1, dst_item)
-			     else 
+			     else
 				-- all full: go idle
 				next_state = 1
 			     end
@@ -209,5 +209,5 @@ minetest.debug("dewar fill")
 	      end
   })
 
-technic.register_MV_machine ("chemistry:gas_condenser","RE")
-technic.register_MV_machine ("chemistry:gas_condenser_active","RE")
+technic.register_machine("MV", "chemistry:gas_condenser","RE")
+technic.register_machine("MV", "chemistry:gas_condenser_active","RE")

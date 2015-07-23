@@ -151,7 +151,7 @@ minetest.register_node("chemistry:molecular_crafting", {
 		end
 	end
 end,
-	
+
 })
 
 minetest.register_node("chemistry:molecular_crafting_active", {
@@ -226,7 +226,7 @@ if pump_on == 0 then
 if air_pressure < 1013 then
 meta:set_float("air_pressure",air_pressure+1)
 end
-if air_pressure >= 1013 then 
+if air_pressure >= 1013 then
 meta:set_float("air_pressure",1013.25)
 end
 end
@@ -296,7 +296,7 @@ end
 			end
 
 		    if recipe then
-			
+
 		       result = { name=recipe.dst_name, count=recipe.dst_count}
 			if recipe.dst2_count > 0 then
 			  result2 = { name=recipe.dst2_name, count=recipe.dst2_count}
@@ -361,5 +361,5 @@ end
 
 
 
-technic.register_MV_machine ("chemistry:molecular_crafting","RE")
-technic.register_MV_machine ("chemistry:molecular_crafting_active","RE")
+technic.register_machine("MV", "chemistry:molecular_crafting","RE")
+technic.register_machine("MV", "chemistry:molecular_crafting_active","RE")

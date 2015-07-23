@@ -203,5 +203,5 @@ minetest.register_abm(
 	      end,
   })
 
-technic.register_LV_machine ("chemistry:air_collector","RE")
-technic.register_LV_machine ("chemistry:air_collector_active","RE")
+technic.register_machine("LV", "chemistry:air_collector","RE")
+technic.register_machine("LV", "chemistry:air_collector_active","RE")

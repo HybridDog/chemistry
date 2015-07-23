@@ -1,1 +1,4 @@
-technic.register_alloy_recipe ("chemistry:aluminum_alloy_base",2, "chemistry:silicon",1, "chemistry:aluminum_alloy",2)
+technic.register_alloy_recipe({
+	input = {"chemistry:aluminum_alloy_base 2", "chemistry:silicon"},
+	output = "chemistry:aluminum_alloy 2"
+})
