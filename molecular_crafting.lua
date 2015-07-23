@@ -1,53 +1,36 @@
 function random_dust()
-local i = math.random(0,100)
-if i > 80 then
-local dust = math.random(0,100)
-if dust == 0 then
-return "technic:mithril_dust"
-end
-if dust > 0 then
-if dust < 4 then
-return "technic:gold_dust"
-end
-end
-if dust > 3 then
-if dust < 10 then
-return "technic:silver_dust"
-end
-end
+	if math.random(101) < 82 then
+		return
+	end
+	local dust = math.random(0,100)
+	if dust == 0 then
+		return "technic:mithril_dust"
+	end
+	if dust < 4 then
+		return "technic:gold_dust"
+	end
+	if dust < 10 then
+		return "technic:silver_dust"
+	end
 
-if dust > 9 then
-if dust < 20  then
-return "technic:chromium_dust"
-end
-end
+	if dust < 20  then
+		return "technic:chromium_dust"
+	end
 
-if dust > 19 then
-if dust < 40 then
-return "technic:zinc_dust"
-end
-end
+	if dust < 40 then
+		return "technic:zinc_dust"
+	end
 
-if dust > 39 then
-if dust < 60 then
-return "technic:tin_dust"
-end
-end
+	if dust < 60 then
+		return "technic:tin_dust"
+	end
 
-if dust > 59 then
-if dust < 80 then
-return "technic:copper_dust"
-end
-end
-if dust > 79 then
-if dust < 100 then
-return "technic:iron_dust"
-end
-end
-end
-if i <= 90 then
-return nil
-end
+	if dust < 80 then
+		return "technic:copper_dust"
+	end
+	if dust < 100 then
+		return "technic:iron_dust"
+	end
 end
 
 molecular_crafting_recipes ={}
