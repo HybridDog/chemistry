@@ -36,55 +36,55 @@ end
 molecular_crafting_recipes ={}
 
 register_molecular_crafting_recipe = function(metal1, count1, metal2, count2, result, count3, result2, count4)
-molecular_crafting_recipes[metal1..metal2] = { src1_count = count1, src2_count = count2, dst_name = result, dst_count = count3, dst2_name = result2, dst2_count = count4 }
+	molecular_crafting_recipes[metal1..metal2] = { src1_count = count1, src2_count = count2, dst_name = result, dst_count = count3, dst2_name = result2, dst2_count = count4 }
 end
 
 
 get_molecular_crafting_recipe = function(metal1, metal2)
--- Check for both combinations of metals and for the right amount in both
-if not metal2 == nil then
-if molecular_crafting_recipes[metal1.name..metal2.name]
-and metal1.count >= molecular_crafting_recipes[metal1.name..metal2.name].src1_count
-and metal2.count >= molecular_crafting_recipes[metal1.name..metal2.name].src2_count then
-	return molecular_crafting_recipes[metal1.name..metal2.name]
-elseif molecular_crafting_recipes[metal2.name..metal1.name]
-	and metal2.count >= molecular_crafting_recipes[metal2.name..metal1.name].src1_count
-	and metal1.count >= molecular_crafting_recipes[metal2.name..metal1.name].src2_count then
-		return molecular_crafting_recipes[metal2.name..metal1.name]
-	end
-end
-if metal2 ==  nil then
-	if molecular_crafting_recipes[metal1.name] then
-		if metal1.count >= molecular_crafting_recipes[metal1.name].src1_count then
-			return molecular_crafting_recipes[metal1.name]
+	-- Check for both combinations of metals and for the right amount in both
+	if not metal2 == nil then
+	if molecular_crafting_recipes[metal1.name..metal2.name]
+	and metal1.count >= molecular_crafting_recipes[metal1.name..metal2.name].src1_count
+	and metal2.count >= molecular_crafting_recipes[metal1.name..metal2.name].src2_count then
+		return molecular_crafting_recipes[metal1.name..metal2.name]
+	elseif molecular_crafting_recipes[metal2.name..metal1.name]
+		and metal2.count >= molecular_crafting_recipes[metal2.name..metal1.name].src1_count
+		and metal1.count >= molecular_crafting_recipes[metal2.name..metal1.name].src2_count then
+			return molecular_crafting_recipes[metal2.name..metal1.name]
 		end
 	end
-end
+	if metal2 ==  nil then
+		if molecular_crafting_recipes[metal1.name] then
+			if metal1.count >= molecular_crafting_recipes[metal1.name].src1_count then
+				return molecular_crafting_recipes[metal1.name]
+			end
+		end
+	end
 end
 
 
 minetest.register_alias("molecular_crafting","chemistry:molecular_crafting")
 minetest.register_alias("molecular_crafting_active","chemistry:molecular_crafting_active")
 minetest.register_craft({
-output = 'chemistry:molecular_crafting',
-recipe = {
-	{'technic:mv_cable','chemistry:microprocessor', 'technic:mv_cable'},
-	{'technic:copper_coil', 'chemistry:molecular_manipulator', 'technic:copper_coil'},
-	{'technic:mv_transformer', 'chemistry:vacuum_chamber', 'chemistry:vacuum_pump'},
-}
+	output = 'chemistry:molecular_crafting',
+	recipe = {
+		{'technic:mv_cable','chemistry:microprocessor', 'technic:mv_cable'},
+		{'technic:copper_coil', 'chemistry:molecular_manipulator', 'technic:copper_coil'},
+		{'technic:mv_transformer', 'chemistry:vacuum_chamber', 'chemistry:vacuum_pump'},
+	}
 })
 
 
 molecular_crafting_formspec =
-"invsize[8,9;]"..
-"list[current_name;src;3,1;1,1;]"..
-"list[current_name;src2;3,2;1,1;]"..
-"list[current_name;dst;5,1;3,2;]"..
-"list[current_name;tst;4,3;1,1;]"..
-"list[current_player;main;0,5;8,4;]"..
-"label[0,0;Molecular Crafting]"..
-"label[1,3;Power level]"..
-"button[5,4;2,1;turn_on;Turn on]"
+	"invsize[8,9;]"..
+	"list[current_name;src;3,1;1,1;]"..
+	"list[current_name;src2;3,2;1,1;]"..
+	"list[current_name;dst;5,1;3,2;]"..
+	"list[current_name;tst;4,3;1,1;]"..
+	"list[current_player;main;0,5;8,4;]"..
+	"label[0,0;Molecular Crafting]"..
+	"label[1,3;Power level]"..
+	"button[5,4;2,1;turn_on;Turn on]"
 
 
 minetest.register_node("chemistry:molecular_crafting", {
@@ -96,57 +96,22 @@ minetest.register_node("chemistry:molecular_crafting", {
 	legacy_facedir_simple = true,
 	sounds = default.node_sound_stone_defaults(),
 	on_construct = function(pos)
-	local meta = minetest.env:get_meta(pos)
-	meta:set_string("formspec", molecular_crafting_formspec)
-	meta:set_string("infotext", "Molecular Crafting")
-	meta:set_float("technic_power_machine", 1)
-	local inv = meta:get_inventory()
-	inv:set_size("src", 1)
-	inv:set_size("src2", 1)
-	inv:set_size("dst", 6)
-	inv:set_size("tst", 1)
-	local molecular_crafting_is_working = 0
-	air_pressure = 1013
-	pump_on = 0
-	meta:set_float("air_pressure",1013.25)
-	meta:set_int(pump_on,0)
+		local meta = minetest.env:get_meta(pos)
+		meta:set_string("formspec", molecular_crafting_formspec)
+		meta:set_string("infotext", "Molecular Crafting")
+		meta:set_float("technic_power_machine", 1)
+		local inv = meta:get_inventory()
+		inv:set_size("src", 1)
+		inv:set_size("src2", 1)
+		inv:set_size("dst", 6)
+		inv:set_size("tst", 1)
+		local molecular_crafting_is_working = 0
+		air_pressure = 1013
+		pump_on = 0
+		meta:set_float("air_pressure",1013.25)
+		meta:set_int(pump_on,0)
 	end,
 	can_dig = function(pos,player)
-	local meta = minetest.env:get_meta(pos);
-	local inv = meta:get_inventory()
-	if not inv:is_empty("src") or not inv:is_empty("src2") or not inv:is_empty("dst") or not inv:is_empty("tst") then
-		minetest.chat_send_player(player:get_player_name(), "Machine cannot be removed because it is not empty");
-		return false
-	else
-		return true
-	end
-	end,
-
-	on_receive_fields = function(pos,formname,fields,sender)
-	local meta = minetest.env:get_meta(pos)
-	local pump_on = meta:get_int("pump_on")
-	if fields.turn_on then
-		if pump_on == 0 then
-			return meta:set_int("pump_on",1)
-		end
-		if pump_on == 1 then
-			return meta:set_int("pump_on",0)
-		end
-	end
-	end,
-
-	})
-
-	minetest.register_node("chemistry:molecular_crafting_active", {
-		description = "Molecular Crafting",
-		tiles = {"chemistry_stainless_steel_block.png", "chemistry_stainless_steel_block.png", "chemistry_molecular_crafting_front.png",
-		"chemistry_molecular_crafting_front.png", "chemistry_molecular_crafting_front.png", "chemistry_molecular_crafting_front.png"},	paramtype2 = "facedir",
-		light_source = 0,
-		drop = "chemistry:molecular_crafting",
-		groups = {cracky=2, not_in_creative_inventory=1},
-		legacy_facedir_simple = true,
-		sounds = default.node_sound_stone_defaults(),
-		can_dig = function(pos,player)
 		local meta = minetest.env:get_meta(pos);
 		local inv = meta:get_inventory()
 		if not inv:is_empty("src") or not inv:is_empty("src2") or not inv:is_empty("dst") or not inv:is_empty("tst") then
@@ -155,8 +120,9 @@ minetest.register_node("chemistry:molecular_crafting", {
 		else
 			return true
 		end
-		end,
-		on_receive_fields = function(pos,formname,fields,sender)
+	end,
+
+	on_receive_fields = function(pos,formname,fields,sender)
 		local meta = minetest.env:get_meta(pos)
 		local pump_on = meta:get_int("pump_on")
 		if fields.turn_on then
@@ -167,16 +133,49 @@ minetest.register_node("chemistry:molecular_crafting", {
 				return meta:set_int("pump_on",0)
 			end
 		end
-		end,
-		})
+	end,
+})
+
+minetest.register_node("chemistry:molecular_crafting_active", {
+	description = "Molecular Crafting",
+	tiles = {"chemistry_stainless_steel_block.png", "chemistry_stainless_steel_block.png", "chemistry_molecular_crafting_front.png",
+	"chemistry_molecular_crafting_front.png", "chemistry_molecular_crafting_front.png", "chemistry_molecular_crafting_front.png"},	paramtype2 = "facedir",
+	light_source = 0,
+	drop = "chemistry:molecular_crafting",
+	groups = {cracky=2, not_in_creative_inventory=1},
+	legacy_facedir_simple = true,
+	sounds = default.node_sound_stone_defaults(),
+	can_dig = function(pos,player)
+		local meta = minetest.env:get_meta(pos);
+		local inv = meta:get_inventory()
+		if not inv:is_empty("src") or not inv:is_empty("src2") or not inv:is_empty("dst") or not inv:is_empty("tst") then
+			minetest.chat_send_player(player:get_player_name(), "Machine cannot be removed because it is not empty");
+			return false
+		else
+			return true
+		end
+	end,
+	on_receive_fields = function(pos,formname,fields,sender)
+		local meta = minetest.env:get_meta(pos)
+		local pump_on = meta:get_int("pump_on")
+		if fields.turn_on then
+			if pump_on == 0 then
+				return meta:set_int("pump_on",1)
+			end
+			if pump_on == 1 then
+				return meta:set_int("pump_on",0)
+			end
+		end
+	end,
+})
 
 
 
-		minetest.register_abm(
-		{ nodenames = {"chemistry:molecular_crafting","chemistry:molecular_crafting_active"},
-		interval = 1,
-		chance   = 1,
-		action = function(pos, node, active_object_count, active_object_count_wider)
+minetest.register_abm({
+	nodenames = {"chemistry:molecular_crafting","chemistry:molecular_crafting_active"},
+	interval = 1,
+	chance   = 1,
+	action = function(pos, node, active_object_count, active_object_count_wider)
 		local meta         = minetest.env:get_meta(pos)
 		local eu_input     = meta:get_int("MV_EU_input")
 		local state        = meta:get_int("state")
@@ -224,16 +223,16 @@ minetest.register_node("chemistry:molecular_crafting", {
 		end
 
 		meta:set_string("formspec",
-		"invsize[8,9;]"..
-		"list[current_name;src;3,1;1,1;]"..
-		"list[current_name;src2;3,2;1,1;]"..
-		"list[current_name;dst;5,1;3,2;]"..
-		"list[current_name;tst;4,3;1,1;]"..
-		"list[current_player;main;0,5;8,4;]"..
-		"label[0,0;Molecular Crafting]"..
-		"label[1,4;Air pressure: "..air_pressure.." hPa]"..
-		"label[1,3;Power level]"..
-		"button[5,4;2,1;turn_on;"..status.."]")
+			"invsize[8,9;]"..
+			"list[current_name;src;3,1;1,1;]"..
+			"list[current_name;src2;3,2;1,1;]"..
+			"list[current_name;dst;5,1;3,2;]"..
+			"list[current_name;tst;4,3;1,1;]"..
+			"list[current_player;main;0,5;8,4;]"..
+			"label[0,0;Molecular Crafting]"..
+			"label[1,4;Air pressure: "..air_pressure.." hPa]"..
+			"label[1,3;Power level]"..
+			"button[5,4;2,1;turn_on;"..status.."]")
 
 
 		-- Power off automatically if no longer connected to a switching station
@@ -311,38 +310,38 @@ minetest.register_node("chemistry:molecular_crafting", {
 					hacky_swap_node(pos, machine_node.."_active")
 					meta:set_int("src_time", meta:get_int("src_time") + 1)
 					if meta:get_int("src_time") == 4 then -- 4 ticks per output
-					meta:set_string("src_time", 0)
-					-- check if there's room for output in "dst" list and that we have the materials
-					if recipe and inv:room_for_item("dst", result) then
-						-- Take stuff from "src" list
-						srcstack:take_item(recipe.src1_count)
-						inv:set_stack("src", 1, srcstack)
-						if not src2stack == nil then
-							src2stack:take_item(recipe.src2_count)
-							inv:set_stack("src2", 1, src2stack)
+						meta:set_string("src_time", 0)
+						-- check if there's room for output in "dst" list and that we have the materials
+						if recipe and inv:room_for_item("dst", result) then
+							-- Take stuff from "src" list
+							srcstack:take_item(recipe.src1_count)
+							inv:set_stack("src", 1, srcstack)
+							if not src2stack == nil then
+								src2stack:take_item(recipe.src2_count)
+								inv:set_stack("src2", 1, src2stack)
+							end
+							-- Put result in "dst" list
+							inv:add_item("dst",result)
+							if result2 then
+								inv:add_item("tst",result2)
+							end
+						else
+							next_state = 1
 						end
-						-- Put result in "dst" list
-						inv:add_item("dst",result)
-						if result2 then
-							inv:add_item("tst",result2)
-						end
-					else
-						next_state = 1
 					end
 				end
-			end
-			-- Change state?
-			if next_state ~= state then
-				meta:set_int("MV_EU_demand", machine_state_demand[next_state])
-				meta:set_int("state", next_state)
+				-- Change state?
+				if next_state ~= state then
+					meta:set_int("MV_EU_demand", machine_state_demand[next_state])
+					meta:set_int("state", next_state)
+				end
 			end
 		end
-	end
 	end,
-	})
+})
 
 
 
 
-	technic.register_machine("MV", "chemistry:molecular_crafting","RE")
-	technic.register_machine("MV", "chemistry:molecular_crafting_active","RE")
+technic.register_machine("MV", "chemistry:molecular_crafting","RE")
+technic.register_machine("MV", "chemistry:molecular_crafting_active","RE")
