@@ -117,7 +117,7 @@ minetest.register_abm({
 		end
 
 		-- Power off automatically if no longer connected to a switching station
-		technic.switching_station_timeout_count(pos, "LV")
+		--technic.switching_station_timeout_count(pos, "LV")
 
 		-- State machine
 		if eu_input == 0 then

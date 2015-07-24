@@ -40,24 +40,25 @@ register_molecular_crafting_recipe = function(metal1, count1, metal2, count2, re
 end
 
 
-get_molecular_crafting_recipe = function(metal1, metal2)
+function get_molecular_crafting_recipe(metal1, metal2)
 	-- Check for both combinations of metals and for the right amount in both
-	if not metal2 == nil then
-	if molecular_crafting_recipes[metal1.name..metal2.name]
-	and metal1.count >= molecular_crafting_recipes[metal1.name..metal2.name].src1_count
-	and metal2.count >= molecular_crafting_recipes[metal1.name..metal2.name].src2_count then
-		return molecular_crafting_recipes[metal1.name..metal2.name]
-	elseif molecular_crafting_recipes[metal2.name..metal1.name]
-		and metal2.count >= molecular_crafting_recipes[metal2.name..metal1.name].src1_count
-		and metal1.count >= molecular_crafting_recipes[metal2.name..metal1.name].src2_count then
-			return molecular_crafting_recipes[metal2.name..metal1.name]
+	if metal2 then
+		local i = metal1.name..metal2.name
+		if molecular_crafting_recipes[i]
+		and metal1.count >= molecular_crafting_recipes[i].src1_count
+		and metal2.count >= molecular_crafting_recipes[i].src2_count then
+			return molecular_crafting_recipes[i]
 		end
-	end
-	if metal2 ==  nil then
-		if molecular_crafting_recipes[metal1.name] then
-			if metal1.count >= molecular_crafting_recipes[metal1.name].src1_count then
-				return molecular_crafting_recipes[metal1.name]
-			end
+		i = metal2.name..metal1.name
+		if molecular_crafting_recipes[i]
+		and metal2.count >= molecular_crafting_recipes[i].src1_count
+		and metal1.count >= molecular_crafting_recipes[i].src2_count then
+			return molecular_crafting_recipes[i]
+		end
+	else
+		if molecular_crafting_recipes[metal1.name]
+		and metal1.count >= molecular_crafting_recipes[metal1.name].src1_count then
+			return molecular_crafting_recipes[metal1.name]
 		end
 	end
 end
@@ -139,7 +140,8 @@ minetest.register_node("chemistry:molecular_crafting", {
 minetest.register_node("chemistry:molecular_crafting_active", {
 	description = "Molecular Crafting",
 	tiles = {"chemistry_stainless_steel_block.png", "chemistry_stainless_steel_block.png", "chemistry_molecular_crafting_front.png",
-	"chemistry_molecular_crafting_front.png", "chemistry_molecular_crafting_front.png", "chemistry_molecular_crafting_front.png"},	paramtype2 = "facedir",
+	"chemistry_molecular_crafting_front.png", "chemistry_molecular_crafting_front.png", "chemistry_molecular_crafting_front.png"},
+	paramtype2 = "facedir",
 	light_source = 0,
 	drop = "chemistry:molecular_crafting",
 	groups = {cracky=2, not_in_creative_inventory=1},
@@ -148,23 +150,21 @@ minetest.register_node("chemistry:molecular_crafting_active", {
 	can_dig = function(pos,player)
 		local meta = minetest.env:get_meta(pos);
 		local inv = meta:get_inventory()
-		if not inv:is_empty("src") or not inv:is_empty("src2") or not inv:is_empty("dst") or not inv:is_empty("tst") then
+		if not inv:is_empty("src")
+		or not inv:is_empty("src2")
+		or not inv:is_empty("dst")
+		or not inv:is_empty("tst") then
 			minetest.chat_send_player(player:get_player_name(), "Machine cannot be removed because it is not empty");
 			return false
 		else
 			return true
 		end
 	end,
-	on_receive_fields = function(pos,formname,fields,sender)
+	on_receive_fields = function(pos,_,fields)
 		local meta = minetest.env:get_meta(pos)
 		local pump_on = meta:get_int("pump_on")
 		if fields.turn_on then
-			if pump_on == 0 then
-				return meta:set_int("pump_on",1)
-			end
-			if pump_on == 1 then
-				return meta:set_int("pump_on",0)
-			end
+			return meta:set_int("pump_on",pump_on)
 		end
 	end,
 })
@@ -207,20 +207,18 @@ minetest.register_abm({
 		if pump_on == 0 then
 			if air_pressure < 1013 then
 				meta:set_float("air_pressure",air_pressure+1)
-			end
-			if air_pressure >= 1013 then
+			else
 				meta:set_float("air_pressure",1013.25)
 			end
 		end
 
 		local status = ""
 		if pump_on == 1 then
-			status = "Turn off"
+			status = "off"
+		elseif pump_on == 0 then
+			status = "on"
 		end
-
-		if pump_on == 0 then
-			status = "Turn on"
-		end
+		status = "Turn "..status
 
 		meta:set_string("formspec",
 			"invsize[8,9;]"..
@@ -236,7 +234,7 @@ minetest.register_abm({
 
 
 		-- Power off automatically if no longer connected to a switching station
-		technic.switching_station_timeout_count(pos, "MV")
+		--technic.switching_station_timeout_count(pos, "MV")
 
 		-- State machine
 		if eu_input == 0 then
@@ -250,8 +248,7 @@ minetest.register_abm({
 			if pump_on == 1 then
 				if air_pressure > 5 then
 					meta:set_float("air_pressure",air_pressure-5)
-				end
-				if air_pressure <= 5 then
+				else
 					meta:set_float("air_pressure",0)
 				end
 			end
@@ -259,15 +256,12 @@ minetest.register_abm({
 				-- Execute always if powered logic
 				local inv    = meta:get_inventory()
 				local empty  = 1
-				local recipe = nil
-				local result = nil
-				local result2 = nil
+				local recipe, result, result2
 
 				-- Get what to cook if anything
 				local srcstack  = inv:get_stack("src", 1)
 				local src2stack = inv:get_stack("src2", 1)
-				local src_item1 = nil
-				local src_item2 = nil
+				local src_item1, src_item2
 				if srcstack and src2stack then
 					src_item1 = srcstack:to_table()
 					src_item2 = src2stack:to_table()
