@@ -337,5 +337,5 @@ minetest.register_abm({
 
 
 
-technic.register_machine("MV", "chemistry:molecular_crafting","RE")
-technic.register_machine("MV", "chemistry:molecular_crafting_active","RE")
+technic.register_machine("MV", "chemistry:molecular_crafting",technic.receiver)
+technic.register_machine("MV", "chemistry:molecular_crafting_active",technic.receiver)
